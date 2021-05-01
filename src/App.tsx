@@ -1,8 +1,8 @@
 import React from 'react';
 
 import Tabs from './ui-library/tabs/Tabs';
-import Collapse from './ui-library/collapse/Collapse';
 import Tab from './ui-library/tabs/Tab';
+import Merchants from './components/Merchants';
 
 const App: React.FunctionComponent = () => {
   const [activeTabIndex, setActiveTabIndex] = React.useState(0);
@@ -19,7 +19,7 @@ const App: React.FunctionComponent = () => {
           Potential Bills
         </Tab>
       </Tabs>
-      <Collapse />
+          <Merchants isBill={activeTabIndex === 0}/>
     </>
   );
 }
