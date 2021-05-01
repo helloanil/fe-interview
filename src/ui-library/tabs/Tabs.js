@@ -7,27 +7,29 @@ import Tab from "./Tab";
 const TabsContainer = styled.div`
   display: flex;
   border-bottom: 1px solid black;
+
+  ${(props) => `
+    & ${Tab}:nth-child(${props.activeTabIndex}) {
+      border-bottom: 1px solid blue;
+    }
+  `}
 `;
 
-const Tabs = (props) => {
-  const [activeTabIndex, setActiveTabIndex] = React.useState(0);
-
-  const isTabActive = (tabIndex) => activeTabIndex === tabIndex;
-
-  const handleTabClick = (tabIndex) => setActiveTabIndex(tabIndex);
-
+const Tabs = ({ activeTabIndex, children }) => {
   return (
-    <TabsContainer>
-      <Tab active={isTabActive(0)} onClick={() => handleTabClick(0)}>
-        Tab 1
-      </Tab>
-      <Tab active={isTabActive(1)} onClick={() => handleTabClick(1)}>
-        Tab 2
-      </Tab>
+    <TabsContainer activeTabIndex={activeTabIndex + 1}>
+      {children}
     </TabsContainer>
   );
 };
 
-Tabs.propTypes = {};
+Tabs.defaultProps = {
+  activeTabIndex: 0,
+};
+
+Tabs.propTypes = {
+  activeTabIndex: PropTypes.number,
+  children: PropTypes.node,
+};
 
 export default Tabs;
