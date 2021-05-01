@@ -16,7 +16,7 @@ const CollapseContent = styled.div`
   display: ${(props) => (props.isCollapsed ? "none" : "initial")};
 `;
 
-const Collapse = (props) => {
+const Collapse = ({ header, content }) => {
   const [isCollapsed, setIsCollapsed] = React.useState(true);
 
   const handleCollapseHeaderClick = () => setIsCollapsed(!isCollapsed);
@@ -24,15 +24,16 @@ const Collapse = (props) => {
   return (
     <CollapseContainer>
       <CollapseHeader onClick={handleCollapseHeaderClick}>
-        {isCollapsed ? "›" : "⌄"} This is the collapse header
+        {isCollapsed ? "›" : "⌄"} {header}
       </CollapseHeader>
-      <CollapseContent isCollapsed={isCollapsed}>
-        This is the collapse content
-      </CollapseContent>
+      <CollapseContent isCollapsed={isCollapsed}>{content}</CollapseContent>
     </CollapseContainer>
   );
 };
 
-Collapse.propTypes = {};
+Collapse.propTypes = {
+  header: PropTypes.node,
+  content: PropTypes.node,
+};
 
 export default Collapse;
