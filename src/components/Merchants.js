@@ -1,12 +1,16 @@
 import React from "react";
 import PropTypes from "prop-types";
 import styled from "styled-components";
-import { FcMoneyTransfer } from "react-icons/fc";
 import { format as formatDate } from "date-fns";
+import { useQueryClient } from "react-query";
 
+import { FcMoneyTransfer } from "react-icons/fc";
 import Collapse from "../ui-library/collapse/Collapse";
 
-import { useFetchMerchantsQuery } from "../queries/merchants";
+import {
+  useFetchMerchantsQuery,
+  useUpdateMerchantMutation,
+} from "../queries/merchants";
 
 const ICON_SIZE = 32;
 
@@ -30,15 +34,44 @@ const MerchantCollapseContainer = styled.div`
   margin: 10px;
 `;
 
+const MerchantTransactionsContainer = styled.div`
+  margin-bottom: 10px;
+`;
+
 const MerchantTransaction = styled.div`
   display: flex;
   justify-content: space-between;
 `;
 
+const MerchantBillButton = styled.button`
+  cursor: pointer;
+  display: flex;
+  margin-left: auto;
+  font-size: 14px;
+`;
+
 const Merchants = ({ isBill }) => {
   const { data: merchants } = useFetchMerchantsQuery();
+  const updateMerchantMutation = useUpdateMerchantMutation();
 
-  console.debug(navigator.language);
+  const queryClient = useQueryClient();
+
+  const updateMerchant = (merchantId, update) =>
+    updateMerchantMutation.mutate(
+      {
+        id: merchantId,
+        requestBody: update,
+      },
+      {
+        onSuccess: () => queryClient.invalidateQueries("merchants"),
+      }
+    );
+
+  const handleRemoveBillButtonClick = (merchantId) =>
+    updateMerchant(merchantId, { isBill: false });
+
+  const handleAddBillButtonClick = (merchantId) =>
+    updateMerchant(merchantId, { isBill: true });
 
   const renderMerchantHeader = (merchant) => (
     <MerchantHeaderContainer>
@@ -51,25 +84,43 @@ const Merchants = ({ isBill }) => {
     </MerchantHeaderContainer>
   );
 
-  const renderMerchantTransactions = (merchant) =>
-    merchant?.transactions?.map((transaction) => (
-      <MerchantTransaction>
-        <span>{formatDate(new Date(transaction.date), "MMMM do, yyyy")}</span>
-        <span>{transaction.amount}£</span>
-      </MerchantTransaction>
-    ));
+  const renderMerchantCollapseContent = (merchant) => (
+    <div>
+      <MerchantTransactionsContainer>
+        {merchant?.transactions?.map((transaction) => (
+          <MerchantTransaction key={transaction.id}>
+            <span>
+              {formatDate(new Date(transaction.date), "MMMM do, yyyy")}
+            </span>
+            <span>{transaction.amount}£</span>
+          </MerchantTransaction>
+        ))}
+      </MerchantTransactionsContainer>
+      {merchant.isBill ? (
+        <MerchantBillButton
+          onClick={() => handleRemoveBillButtonClick(merchant.id)}
+        >
+          Remove Bill
+        </MerchantBillButton>
+      ) : (
+        <MerchantBillButton
+          onClick={() => handleAddBillButtonClick(merchant.id)}
+        >
+          Add as Bill
+        </MerchantBillButton>
+      )}
+    </div>
+  );
 
   if (!merchants || merchants.length === 0) return null;
-
-  console.debug(merchants);
 
   return merchants
     ?.filter((merchant) => merchant.isBill === isBill)
     .map((merchant) => (
-      <MerchantCollapseContainer>
+      <MerchantCollapseContainer key={merchant.id}>
         <Collapse
           header={renderMerchantHeader(merchant)}
-          content={renderMerchantTransactions(merchant)}
+          content={renderMerchantCollapseContent(merchant)}
         />
       </MerchantCollapseContainer>
     ));

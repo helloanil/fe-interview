@@ -1,4 +1,4 @@
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 
 import { APIConstants } from "../shared/constants";
 
@@ -11,5 +11,19 @@ const getMerchants = async () => {
   return responseJson;
 };
 
-export const useFetchMerchantsQuery = () =>
-  useQuery("mertchantsData", getMerchants);
+const patchMerchant = async (data) => {
+  const response = await fetch(`${MERCHANTS_URL}/${data.id}`, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+    method: "PATCH",
+    body: JSON.stringify(data.requestBody),
+  });
+  const responseJson = await response.json();
+
+  return responseJson;
+};
+
+export const useFetchMerchantsQuery = () => useQuery("merchants", getMerchants);
+
+export const useUpdateMerchantMutation = () => useMutation(patchMerchant);
