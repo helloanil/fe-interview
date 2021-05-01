@@ -6,7 +6,7 @@ import Merchants from './components/Merchants';
 
 const App: React.FunctionComponent = () => {
   const [activeTabIndex, setActiveTabIndex] = React.useState(0);
-  
+
   const handleTabClick = (event: any) => setActiveTabIndex(event.target.tabIndex);
 
   return (
@@ -19,7 +19,7 @@ const App: React.FunctionComponent = () => {
           Potential Bills
         </Tab>
       </Tabs>
-          <Merchants isBill={activeTabIndex === 0}/>
+      <Merchants isBill={activeTabIndex === 0} />
     </>
   );
 }
