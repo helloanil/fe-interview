@@ -1,8 +1,13 @@
 import React from 'react';
-import welcomeIcon from './assets/welcome.jpg';
+
+import Tabs from './ui-library/tabs/Tabs';
+import Collapse from './ui-library/collapse/Collapse';
 
 const App: React.FunctionComponent = () => (
-  <img src={welcomeIcon} alt="Welcome!"/>
+  <>
+    <Tabs />
+    <Collapse />
+  </>
 );
 
 export default App;
